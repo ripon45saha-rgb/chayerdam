@@ -53,7 +53,7 @@ function bd(s){return new Date(s).toLocaleString('bn-BD',{day:'numeric',month:'s
 function toast(t){var e=$('toast');e.textContent=t;e.className='show';setTimeout(function(){e.className=''},2200)}
 function opts(a,v){return a.map(function(x){return '<option'+(x===v?' selected':'')+'>'+esc(x)+'</option>'}).join('')}
 async function init(){if(!sb){$('lm').textContent='ফাইলের শুরুতে SB_URL ও SB_KEY বসান।';return}var s=await sb.auth.getSession();if(s.data.session)enter()}
-$('li').onclick=async function(){var r=await sb.auth.signInWithPassword({email:$('em').value.trim(),password:$('pw').value});if(r.error){$('lm').textContent='ইমেইল বা পাসওয়ার্ড ভুল।';return}enter()};
+$('li').onclick=async function(){var r=await sb.auth.signInWithPassword({email:$('em').value.trim(),password:$('pw').value});if(r.error){var m=r.error.message||'';$('lm').textContent=(/Invalid login/i.test(m)?'ইমেইল বা পাসওয়ার্ড ভুল, অথবা এই ইউজার Supabase-এ তৈরি হয়নি।':/not confirmed/i.test(m)?'ইমেইল কনফার্ম হয়নি। Supabase → Authentication → Users-এ ইউজারটা Confirm করুন।':'Error: '+m);return}enter()};
 $('lo').onclick=async function(){await sb.auth.signOut();location.reload()};
 function enter(){$('login').hidden=true;$('app').hidden=false;go('dash')}
 $('tabs').onclick=function(e){var t=e.target.getAttribute('data-t');if(t)go(t)};
