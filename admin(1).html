@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>অ্যাডমিন | চায়ের দাম</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<style>
+:root{--bg:#f6f4ee;--sf:#ffffff;--ink:#13201a;--mut:#5b675f;--line:#dfdbcd;--acc:#17694a;--ok:#17694a;--bad:#d2452f;--soft:#e9e6d9;color-scheme:light dark;padding-top:env(safe-area-inset-top,0px)}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1613;--sf:#17211c;--ink:#eef2ea;--mut:#9fb0a5;--line:#2a3830;--acc:#5fc79a;--ok:#5fc79a;--soft:#1f2c25}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.6 'Noto Sans Bengali',system-ui,sans-serif}
+h1,h2,h3,button,.num{font-family:'Noto Sans Bengali','Noto Sans Bengali',sans-serif}h3{margin:0 0 10px}
+.w{max-width:1000px;margin:0 auto;padding:16px}
+.lg{min-height:100vh;display:grid;place-items:center;padding:20px}.lg .card{width:100%;max-width:380px}
+.card{background:var(--sf);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px}
+input,textarea,select{width:100%;padding:11px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;margin:4px 0 10px}
+input[type=checkbox]{width:auto;margin:0 8px 0 0}label{font-weight:600;font-size:14px;display:block}label.c{font-weight:400;display:inline-flex;align-items:center;margin-right:18px}
+button{border:0;cursor:pointer;border-radius:99px;padding:10px 20px;font-weight:600;font-size:15px;background:var(--acc);color:#fff}
+@media(prefers-color-scheme:dark){button{color:#08140e}}
+button.o{background:none;color:var(--ink);border:1.5px solid var(--line)}button.g{background:var(--ok);color:#fff}button.r{background:var(--bad);color:#fff}button.s{padding:6px 14px;font-size:14px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header .w{display:flex;align-items:center;gap:12px;padding:10px 16px}header b{font:800 20px 'Noto Sans Bengali';margin-right:auto}
+#tabs{display:flex;gap:6px;overflow-x:auto;padding:10px 16px;max-width:1000px;margin:auto}#tabs button{background:var(--sf);color:var(--ink);border:1px solid var(--line);white-space:nowrap}#tabs button.on{background:var(--ink);color:var(--bg)}
+.st{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}.st .card{margin:0;text-align:center}.num{display:block;font-size:30px;font-weight:700;color:var(--acc)}
+.it{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--line)}.it:last-child{border:0}.it small{color:var(--mut)}.acts{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tag{font-size:12px;padding:2px 10px;border-radius:99px;background:var(--soft);font-weight:600}.ok{color:var(--ok)}.bad{color:var(--bad)}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,80px);background:var(--ink);color:var(--bg);padding:10px 20px;border-radius:99px;transition:transform .3s;z-index:20}#toast.show{transform:translate(-50%,0)}
+.g2{display:grid;gap:0 14px}@media(min-width:700px){.g2{grid-template-columns:1fr 1fr}}
+h1,h2,h3,.num{font-family:'Noto Serif Bengali','Noto Sans Bengali',serif}header b{font-family:'Noto Serif Bengali',serif}
+</style>
+</head>
+<body>
+<div class="lg" id="login"><div class="card"><h3 style="font-size:24px">চায়ের দাম · অ্যাডমিন</h3>
+<label for="em">ইমেইল</label><input id="em" type="text" autocomplete="username">
+<label for="pw">পাসওয়ার্ড</label><input id="pw" type="password" autocomplete="current-password">
+<button id="li" style="width:100%">লগইন</button><p id="lm" class="bad"></p></div></div>
+<div id="app" hidden>
+<header><div class="w"><b>☕ চায়ের দাম অ্যাডমিন</b><a href="index.html" target="_blank" style="color:var(--acc)">সাইট দেখুন</a><button class="o s" id="lo">লগআউট</button></div>
+<div id="tabs"><button data-t="dash">ড্যাশবোর্ড</button><button data-t="res">রিসোর্স</button><button data-t="don">অনুদান</button><button data-t="exp">খরচ</button><button data-t="help">সাহায্যের আবেদন</button><button data-t="msg">মেসেজ</button><button data-t="set">সেটিংস</button></div></header>
+<main class="w" id="v"></main></div>
+<div id="toast"></div>
+<script>
+var SB_URL='https://ihfzuwrkxqiblyriglka.supabase.co', SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImloZnp1d3JreHFpYmx5cmlnbGthIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU3NTYwMjUsImV4cCI6MjExMTMzMjAyNX0.n6aYYWyEewYGh4V1wDiWRkCkqyc61aUMqFhMh35Vxa4';   // index.html-এর মতো একই Supabase URL ও anon key
+var CATS=['ই-বই ও PDF','গাইড','টেমপ্লেট','ভিডিও','কোড ও টুল','ডিজাইন'];
+var EC=['সার্ভার ও ডোমেইন','ডেভেলপমেন্ট','প্রতিষ্ঠাতা','ভালো কাজে সাহায্য','অন্যান্য'];
+var sb=null;try{if(SB_URL&&SB_KEY)sb=window.supabase.createClient(SB_URL,SB_KEY)}catch(e){}
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function bn(n){return Number(n).toLocaleString('bn-BD',{maximumFractionDigits:0})}
+function bd(s){return new Date(s).toLocaleString('bn-BD',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'})}
+function toast(t){var e=$('toast');e.textContent=t;e.className='show';setTimeout(function(){e.className=''},2200)}
+function opts(a,v){return a.map(function(x){return '<option'+(x===v?' selected':'')+'>'+esc(x)+'</option>'}).join('')}
+async function init(){if(!sb){$('lm').textContent='ফাইলের শুরুতে SB_URL ও SB_KEY বসান।';return}var s=await sb.auth.getSession();if(s.data.session)enter()}
+$('li').onclick=async function(){var r=await sb.auth.signInWithPassword({email:$('em').value.trim(),password:$('pw').value});if(r.error){$('lm').textContent='ইমেইল বা পাসওয়ার্ড ভুল।';return}enter()};
+$('lo').onclick=async function(){await sb.auth.signOut();location.reload()};
+function enter(){$('login').hidden=true;$('app').hidden=false;go('dash')}
+$('tabs').onclick=function(e){var t=e.target.getAttribute('data-t');if(t)go(t)};
+function go(t){document.querySelectorAll('#tabs button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-t')===t)});V[t]()}
+function sc(n,l,t){return '<div class="card"><span class="num">'+n+'</span>'+l+(t?'<br><button class="o s" onclick="go(\''+t+'\')" style="margin-top:8px">খুলুন</button>':'')+'</div>'}
+var df='pending',hf='new',V={};
+V.dash=async function(){var r=await Promise.all([sb.from('donations').select('id',{count:'exact',head:true}).eq('status','pending'),sb.from('donations').select('amount').eq('status','verified'),sb.from('resources').select('id',{count:'exact',head:true}),sb.from('help_requests').select('id',{count:'exact',head:true}).eq('status','new'),sb.from('messages').select('id',{count:'exact',head:true})]);
+var tot=(r[1].data||[]).reduce(function(s,d){return s+d.amount},0);
+$('v').innerHTML='<div class="st">'+sc(bn(r[0].count||0),'যাচাইয়ের অপেক্ষায় অনুদান','don')+sc('৳'+bn(tot),'মোট যাচাইকৃত')+sc(bn(r[2].count||0),'রিসোর্স','res')+sc(bn(r[3].count||0),'নতুন সাহায্যের আবেদন','help')+sc(bn(r[4].count||0),'মেসেজ','msg')+'</div><div class="card"><h3>প্রতিদিনের কাজ</h3>১. অনুদান ট্যাবে bKash/Nagad অ্যাপের সাথে Transaction ID মিলিয়ে "যাচাই" দিন।<br>২. সাহায্য দিলে খরচ ট্যাবে এন্ট্রি দিন।<br>৩. নতুন রিসোর্স রিসোর্স ট্যাব থেকে যোগ করুন।</div>'};
+V.res=async function(){var r=await sb.from('resources').select('*').order('created_at',{ascending:false}),L=r.data||[];window.RL=L;
+$('v').innerHTML='<div class="card"><h3 id="rt">নতুন রিসোর্স যোগ করুন</h3><input type="hidden" id="rid"><div class="g2"><div><label>শিরোনাম *</label><input id="rti"></div><div><label>ক্যাটাগরি</label><select id="rca">'+opts(CATS)+'</select></div></div><label>সংক্ষিপ্ত বিবরণ</label><textarea id="rde" rows="3"></textarea><div class="g2"><div><label>ডাউনলোড লিংক * (Google Drive / অন্য)</label><input id="rur" placeholder="https://"></div><div><label>কভার ছবির লিংক (ঐচ্ছিক)</label><input id="rco" placeholder="https://"></div></div><label>সাইজ/ধরন (যেমন PDF · ২ MB)</label><input id="rsz"><label class="c"><input type="checkbox" id="rfe">বিশেষ (হোমে দেখাবে)</label><label class="c"><input type="checkbox" id="rpu" checked>প্রকাশিত</label><p><button id="rsv">সংরক্ষণ</button> <button class="o" onclick="go(\'res\')">নতুন ফর্ম</button></p></div><h3>সব রিসোর্স ('+bn(L.length)+')</h3><div class="card">'+(L.length?L.map(function(x,i){return '<div class="it"><div><b>'+esc(x.title)+'</b> <span class="tag">'+esc(x.category)+'</span>'+(x.featured?' <span class="tag">বিশেষ</span>':'')+(x.published?'':' <span class="tag bad">লুকানো</span>')+'<br><small>'+bn(x.downloads)+' ডাউনলোড</small></div><div class="acts"><button class="o s" onclick="ed('+i+')">এডিট</button><button class="r s" onclick="rm(\''+x.id+'\')">মুছুন</button></div></div>'}).join(''):'<p>এখনও কিছু নেই।</p>')+'</div>';
+$('rsv').onclick=async function(){var o={title:$('rti').value.trim(),category:$('rca').value,description:$('rde').value.trim(),url:$('rur').value.trim(),cover:$('rco').value.trim()||null,size:$('rsz').value.trim()||null,featured:$('rfe').checked,published:$('rpu').checked};
+if(!o.title||!o.url){toast('শিরোনাম ও লিংক দিন');return}var id=$('rid').value,e=(id?await sb.from('resources').update(o).eq('id',id):await sb.from('resources').insert(o)).error;
+if(e){toast('সমস্যা: '+e.message);return}toast('সংরক্ষিত ✓');go('res')}};
+function ed(i){var x=RL[i];$('rt').textContent='রিসোর্স এডিট';$('rid').value=x.id;$('rti').value=x.title;$('rca').value=x.category;$('rde').value=x.description||'';$('rur').value=x.url;$('rco').value=x.cover||'';$('rsz').value=x.size||'';$('rfe').checked=x.featured;$('rpu').checked=x.published;scrollTo(0,0)}
+async function rm(id){if(!confirm('সত্যিই মুছবেন?'))return;await sb.from('resources').delete().eq('id',id);toast('মুছে গেছে');go('res')}
+V.don=async function(){var r=await sb.from('donations').select('*').eq('status',df).order('created_at',{ascending:false}).limit(200),L=r.data||[];
+var nm={pending:'অপেক্ষায়',verified:'যাচাইকৃত',rejected:'বাতিল'};
+$('v').innerHTML='<div class="acts" style="margin-bottom:12px">'+['pending','verified','rejected'].map(function(s){return '<button class="'+(s===df?'':'o ')+'s" onclick="df=\''+s+'\';go(\'don\')">'+nm[s]+'</button>'}).join('')+'</div><div class="card">'+(L.length?L.map(function(d){return '<div class="it"><div><b>'+esc(d.name)+'</b> '+(d.anonymous?'<span class="tag">নাম গোপন</span>':'')+'<br><small>'+esc(d.method||'-')+' · <b>'+esc(d.trx_id)+'</b> · '+bd(d.created_at)+'</small></div><div class="acts"><b class="ok">৳'+bn(d.amount)+'</b>'+(d.status!=='verified'?'<button class="g s" onclick="ds(\''+d.id+'\',\'verified\')">✓ যাচাই</button>':'')+(d.status!=='rejected'?'<button class="r s" onclick="ds(\''+d.id+'\',\'rejected\')">✕ বাতিল</button>':'')+'</div></div>'}).join(''):'<p>কিছু নেই।</p>')+'</div>'};
+async function ds(id,s){var r=await sb.from('donations').update({status:s}).eq('id',id);toast(r.error?'সমস্যা':'হয়েছে ✓');go('don')}
+V.exp=async function(){var r=await sb.from('expenses').select('*').order('created_at',{ascending:false}).limit(200),L=r.data||[];
+$('v').innerHTML='<div class="card"><h3>নতুন খরচ যোগ করুন</h3><p class="note" style="color:var(--mut)">খরচ একবার যোগ হলে মোছা যায় না (স্বচ্ছতার জন্য)। ভুল হলে নতুন এন্ট্রিতে বিবরণে লিখে দিন।</p><label>বিবরণ *</label><input id="et" placeholder="যেমন: ডোমেইন নবায়ন"><div class="g2"><div><label>টাকা *</label><input id="ea" type="number" inputmode="numeric"></div><div><label>খাত</label><select id="ec">'+opts(EC)+'</select></div></div><button id="es">যোগ করুন</button></div><div class="card"><h3>খরচের তালিকা</h3>'+(L.length?L.map(function(x){return '<div class="it"><div><b>'+esc(x.title)+'</b><br><small>'+esc(x.category||'')+' · '+bd(x.created_at)+'</small></div><b class="bad">৳'+bn(x.amount)+'</b></div>'}).join(''):'<p>এখনও কোনো খরচ নেই।</p>')+'</div>';
+$('es').onclick=async function(){var a=Number($('ea').value),t=$('et').value.trim();if(!t||!(a>0)){toast('বিবরণ ও টাকা দিন');return}var r=await sb.from('expenses').insert({title:t,amount:a,category:$('ec').value});toast(r.error?'সমস্যা':'যোগ হয়েছে ✓');go('exp')}};
+V.help=async function(){var r=await sb.from('help_requests').select('*').eq('status',hf).order('created_at',{ascending:false}).limit(200),L=r.data||[];var nm={new:'নতুন',done:'সাহায্য দেওয়া হয়েছে',rejected:'বাতিল'};
+$('v').innerHTML='<div class="acts" style="margin-bottom:12px">'+['new','done','rejected'].map(function(s){return '<button class="'+(s===hf?'':'o ')+'s" onclick="hf=\''+s+'\';go(\'help\')">'+nm[s]+'</button>'}).join('')+'</div>'+(L.length?L.map(function(d){var p=String(d.phone).replace(/\D/g,'');if(p[0]==='0')p='88'+p;return '<div class="card"><b>'+esc(d.name)+'</b> <span class="tag">'+esc(d.category||'')+'</span>'+(d.amount?' <b class="ok">৳'+bn(d.amount)+'</b>':'')+'<br><small>'+bd(d.created_at)+'</small><p>'+esc(d.details)+'</p><div class="acts"><a href="https://wa.me/'+p+'" target="_blank" rel="noopener">WhatsApp: '+esc(d.phone)+'</a>'+(/^https?:\/\//.test(d.proof||'')?'<a href="'+esc(d.proof)+'" target="_blank" rel="noopener">প্রমাণ দেখুন</a>':'')+'</div><p class="acts">'+(d.status!=='done'?'<button class="g s" onclick="hs(\''+d.id+'\',\'done\')">✓ সাহায্য দেওয়া হয়েছে</button>':'')+(d.status!=='rejected'?'<button class="r s" onclick="hs(\''+d.id+'\',\'rejected\')">✕ বাতিল</button>':'')+(d.status!=='new'?'<button class="o s" onclick="hs(\''+d.id+'\',\'new\')">নতুনে ফেরান</button>':'')+'</p></div>'}).join(''):'<div class="card">কিছু নেই।</div>')};
+async function hs(id,s){await sb.from('help_requests').update({status:s}).eq('id',id);toast('হয়েছে ✓');go('help')}
+V.msg=async function(){var r=await sb.from('messages').select('*').order('created_at',{ascending:false}).limit(200),L=r.data||[];
+$('v').innerHTML='<div class="card"><h3>মেসেজ ও রিসোর্স অনুরোধ</h3>'+(L.length?L.map(function(m){return '<div class="it" style="display:block"><b>'+esc(m.name)+'</b> · '+esc(m.contact)+'<br><small>'+bd(m.created_at)+'</small><p style="margin:6px 0 0">'+esc(m.message)+'</p></div>'}).join(''):'<p>কিছু নেই।</p>')+'</div>'};
+V.set=async function(){var r=await sb.from('settings').select('*'),m={};(r.data||[]).forEach(function(x){m[x.key]=x.value});
+var F=[['good_pct','ভালো কাজে যাওয়া শতাংশ (যেমন 15)'],['goal_cups','চা-মিটারের লক্ষ্য (কাপ)'],['pay_bkash','bKash নম্বর'],['pay_nagad','Nagad নম্বর'],['c_email','যোগাযোগ ইমেইল'],['c_wa','WhatsApp নম্বর (দেশকোডসহ, যেমন 8801XXXXXXXXX)'],['c_fb','Facebook লিংক'],['c_li','LinkedIn লিংক']];
+$('v').innerHTML='<div class="card"><h3>সাইট সেটিংস</h3>'+F.map(function(f){return '<label>'+f[1]+'</label><input id="s_'+f[0]+'" value="'+esc(m[f[0]]||'')+'">'}).join('')+'<button id="ss">সংরক্ষণ</button></div>';
+$('ss').onclick=async function(){var rows=F.map(function(f){return{key:f[0],value:$('s_'+f[0]).value.trim()}});var e=(await sb.from('settings').upsert(rows)).error;toast(e?'সমস্যা':'সংরক্ষিত ✓')}};
+init();
+</script>
+</body>
+</html>
